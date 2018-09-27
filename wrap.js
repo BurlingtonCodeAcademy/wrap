@@ -1,14 +1,50 @@
 jsStringEscape = require('js-string-escape')
 
-function wrap(original, width) {
+function wrap(original, maximumWidth) {
+    let words = original.split(' ');
+    let lines = words.reduce(wrapWord, ['']);
+    return lines.join('\n').trim();
+
+    function wrapWord(lines, word) {
+        let line = lines.pop();
+        const newLength = (line.length + word.length + 1);
+        if (newLength > maximumWidth) {
+            lines.push(line.trim());
+            line = '';
+        }
+        line += word + ' ';
+        lines.push(line);
+        return lines;
+    }
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function oldwrap(original, width) {
     let words = original.split(' ');
     let column = 0;
     let line = '';
+
     let i = 0;
     while (i < words.length) {
         let word = words[i];
+
         let lastWord = (i === words.length - 1);
         ({ column, line } = handleNextWord(column, word, width, line, lastWord));
+        
         i += 1;
     }
     return line;
