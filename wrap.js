@@ -1,39 +1,40 @@
 jsStringEscape = require('js-string-escape')
 
 function wrap(original, width) {
-    if (original.length > width) {
-        let words = original.split(' ');
-        // console.log(words)
-        let column = 0;
-        let line = '';
-        let i = 0;
-        while (i<words.length) {
-            let word = words[i];
-            let lastWord = (i === words.length - 1);
-            column += word.length;
-            if (column > width) {
-                line = line.trim() + '\n' 
-                if (lastWord) {
-                    line += word;
-                } else {
-                    line += word + ' ';
-                }
-                column = word.length;
-            } else {
-                if (lastWord) {
-                    line += word;
-                } else {
-                    line += word + ' ';
-                }
-            }
-            console.log('---');
-            console.log(line)
-
-            i += 1;
-        }
-        return line;
+    let words = original.split(' ');
+    let column = 0;
+    let line = '';
+    let i = 0;
+    while (i < words.length) {
+        let word = words[i];
+        let lastWord = (i === words.length - 1);
+        ({ column, line } = handleNextWord(column, word, width, line, lastWord));
+        i += 1;
     }
-    return original;
+    return line;
+}
+
+function handleNextWord(column, word, width, line, lastWord) {
+    column += word.length;
+    if (column > width) {
+        line = line.trim() + '\n';
+        line = addWord(line, word, lastWord);
+        column = word.length;
+    }
+    else {
+        line = addWord(line, word, lastWord);
+    }
+    return { column, line };
+}
+
+function addWord(line, word, lastWord) {
+    if (lastWord) {
+        line += word;
+    }
+    else {
+        line += word + ' ';
+    }
+    return line;
 }
 
 function assert(value, why) {
